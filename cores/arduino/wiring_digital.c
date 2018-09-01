@@ -30,6 +30,10 @@ void pinMode( uint32_t ulPin, uint32_t ulMode )
     return ;
   }
 
+  // enable continuous pin scanning on all pins, so that we can read from
+  // the high speed PORT_IOBUS without getting stale data.
+  PORT->Group[g_APinDescription[ulPin].ulPort].CTRL.reg = 0xFFFFFFFF;
+
   // Set pin mode according to chapter '22.6.3 I/O Pin Configuration'
   switch ( ulMode )
   {
