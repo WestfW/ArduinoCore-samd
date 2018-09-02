@@ -19,6 +19,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <limits.h>
 #include "sam.h"
 
 /*
@@ -64,6 +65,8 @@ typedef enum _EAnalogChannel
   ADC_Channel18=18,
   ADC_Channel19=19,
   DAC_Channel0,
+  _ADCChannel_MAX = INT_MAX,  // Force enum to be int
+
 } EAnalogChannel ;
 
 // Definitions for TC channels
@@ -97,6 +100,7 @@ typedef enum _ETCChannel
   TC6_CH1  = (6<<8)|(1),
   TC7_CH0  = (7<<8)|(0),
   TC7_CH1  = (7<<8)|(1),
+  _ETCChannel_MAX = INT_MAX,  // Force enum to be int
 #endif // __SAMD21J18A__
 } ETCChannel ;
 
@@ -138,6 +142,7 @@ typedef enum _EPWMChannel
   PWM7_CH0=TC7_CH0,
   PWM7_CH1=TC7_CH1,
 #endif // __SAMD21J18A__
+  _EPWMChannel_MAX = INT_MAX,  // Force enum to be int
 } EPWMChannel ;
 
 // convenient defines for pPort values
@@ -168,6 +173,7 @@ typedef enum
   EXTERNAL_NUM_INTERRUPTS,
   NOT_AN_INTERRUPT = -1,
   EXTERNAL_INT_NONE = NOT_AN_INTERRUPT,
+  _EINTChannel_MAX = INT_MAX,  // Force enum to be int
 } EExt_Interrupts ;
 
 //A    B                 C       D          E      F   G   H
@@ -191,6 +197,8 @@ typedef enum _EPioType
 
   PIO_PWM=PIO_TIMER,
   PIO_PWM_ALT=PIO_TIMER_ALT,
+  _EPioType_MAX = INT_MAX,  // Force enum to be int
+  
 } EPioType ;
 
 /**
