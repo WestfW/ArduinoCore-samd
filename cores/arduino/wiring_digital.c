@@ -21,7 +21,6 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-
 void pinMode( uint32_t ulPin, uint32_t ulMode )
 {
   // Handle the case the pin isn't usable as PIO
@@ -30,43 +29,47 @@ void pinMode( uint32_t ulPin, uint32_t ulMode )
     return ;
   }
 
+  PortGroup *pPort = &PORT->Group[g_APinDescription[ulPin].ulPort];
+  uint32_t pin = g_APinDescription[ulPin].ulPin;
+  uint32_t pinMask = (1ul << pin);
+
   // enable continuous pin scanning on all pins, so that we can read from
   // the high speed PORT_IOBUS without getting stale data.
-  PORT->Group[g_APinDescription[ulPin].ulPort].CTRL.reg = 0xFFFFFFFF;
+  pPort->CTRL.reg |= pinMask;
 
   // Set pin mode according to chapter '22.6.3 I/O Pin Configuration'
   switch ( ulMode )
   {
     case INPUT:
       // Set pin to input mode
-      PORT->Group[g_APinDescription[ulPin].ulPort].PINCFG[g_APinDescription[ulPin].ulPin].reg=(uint8_t)(PORT_PINCFG_INEN) ;
-      PORT->Group[g_APinDescription[ulPin].ulPort].DIRCLR.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN) ;
+      pPort->DIRCLR.reg = pinMask;
     break ;
 
     case INPUT_PULLUP:
       // Set pin to input mode with pull-up resistor enabled
-      PORT->Group[g_APinDescription[ulPin].ulPort].PINCFG[g_APinDescription[ulPin].ulPin].reg=(uint8_t)(PORT_PINCFG_INEN|PORT_PINCFG_PULLEN) ;
-      PORT->Group[g_APinDescription[ulPin].ulPort].DIRCLR.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN|PORT_PINCFG_PULLEN) ;
+      pPort->DIRCLR.reg = pinMask;
 
       // Enable pull level (cf '22.6.3.2 Input Configuration' and '22.8.7 Data Output Value Set')
-      PORT->Group[g_APinDescription[ulPin].ulPort].OUTSET.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->OUTSET.reg = pinMask;
     break ;
 
     case INPUT_PULLDOWN:
       // Set pin to input mode with pull-down resistor enabled
-      PORT->Group[g_APinDescription[ulPin].ulPort].PINCFG[g_APinDescription[ulPin].ulPin].reg=(uint8_t)(PORT_PINCFG_INEN|PORT_PINCFG_PULLEN) ;
-      PORT->Group[g_APinDescription[ulPin].ulPort].DIRCLR.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN|PORT_PINCFG_PULLEN) ;
+      pPort->DIRCLR.reg = pinMask;
 
       // Enable pull level (cf '22.6.3.2 Input Configuration' and '22.8.6 Data Output Value Clear')
-      PORT->Group[g_APinDescription[ulPin].ulPort].OUTCLR.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->OUTCLR.reg = pinMask;
     break ;
 
     case OUTPUT:
       // enable input, to support reading back values, with pullups disabled
-      PORT->Group[g_APinDescription[ulPin].ulPort].PINCFG[g_APinDescription[ulPin].ulPin].reg=(uint8_t)(PORT_PINCFG_INEN) ;
+      pPort->PINCFG[pin].reg=(uint8_t)(PORT_PINCFG_INEN) ;
 
       // Set pin to output mode
-      PORT->Group[g_APinDescription[ulPin].ulPort].DIRSET.reg = (uint32_t)(1<<g_APinDescription[ulPin].ulPin) ;
+      pPort->DIRSET.reg = pinMask;
     break ;
 
     default:
@@ -83,23 +86,23 @@ void digitalWrite( uint32_t ulPin, uint32_t ulVal )
     return ;
   }
 
-  EPortType port = g_APinDescription[ulPin].ulPort;
+  PortGroup *pPort = &PORT->Group[g_APinDescription[ulPin].ulPort];
   uint32_t pin = g_APinDescription[ulPin].ulPin;
   uint32_t pinMask = (1ul << pin);
 
-  if ( (PORT->Group[port].DIRSET.reg & pinMask) == 0 ) {
+  if ( (pPort->DIRSET.reg & pinMask) == 0 ) {
     // the pin is not an output, disable pull-up if val is LOW, otherwise enable pull-up
-    PORT->Group[port].PINCFG[pin].bit.PULLEN = ((ulVal == LOW) ? 0 : 1) ;
+    pPort->PINCFG[pin].bit.PULLEN = ((ulVal == LOW) ? 0 : 1) ;
   }
 
   switch ( ulVal )
   {
     case LOW:
-      PORT->Group[port].OUTCLR.reg = pinMask;
+      pPort->OUTCLR.reg = pinMask;
     break ;
 
     default:
-      PORT->Group[port].OUTSET.reg = pinMask;
+      pPort->OUTSET.reg = pinMask;
     break ;
   }
 
