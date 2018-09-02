@@ -31,6 +31,7 @@ uint32_t pulseIn(uint32_t pin, uint32_t state, uint32_t timeout)
   // pulse width measuring loop and achieve finer resolution.  calling
   // digitalRead() instead yields much coarser resolution.
   PinDescription p = g_APinDescription[pin];
+  PortGroup *pPort = p.pPort;
   uint32_t bit = 1 << p.ulPin;
   uint32_t stateMask = state ? bit : 0;
 
@@ -38,7 +39,7 @@ uint32_t pulseIn(uint32_t pin, uint32_t state, uint32_t timeout)
   // the initial loop; it takes (roughly) 13 clock cycles per iteration.
   uint32_t maxloops = microsecondsToClockCycles(timeout) / 13;
 
-  uint32_t width = countPulseASM(&(PORT->Group[p.ulPort].IN.reg), bit, stateMask, maxloops);
+  uint32_t width = countPulseASM(&(pPort->IN.reg), bit, stateMask, maxloops);
 
   // convert the reading to microseconds. The loop has been determined
   // to be 13 clock cycles long and have about 16 clocks between the edge

@@ -44,7 +44,6 @@
 
 // Low-level pin register query macros
 // -----------------------------------
-#define digitalPinToPort(P)      (&(PORT->Group[g_APinDescription[P].ulPort]))
 #define digitalPinToBitMask(P)   (1 << g_APinDescription[P].ulPin)
 //#define analogInPinToBit(P)    ()
 #define portOutputRegister(port) (&(port->OUT.reg))

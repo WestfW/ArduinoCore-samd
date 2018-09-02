@@ -29,7 +29,7 @@ void pinMode( uint32_t ulPin, uint32_t ulMode )
     return ;
   }
 
-  PortGroup *pPort = &PORT->Group[g_APinDescription[ulPin].ulPort];
+  PortGroup *pPort = digitalPinToPort(ulPin);
   uint32_t pin = g_APinDescription[ulPin].ulPin;
   uint32_t pinMask = (1ul << pin);
 
@@ -86,7 +86,7 @@ void digitalWrite( uint32_t ulPin, uint32_t ulVal )
     return ;
   }
 
-  PortGroup *pPort = &PORT->Group[g_APinDescription[ulPin].ulPort];
+  PortGroup *pPort = digitalPinToPort(ulPin);
   uint32_t pin = g_APinDescription[ulPin].ulPin;
   uint32_t pinMask = (1ul << pin);
 
@@ -116,8 +116,10 @@ int digitalRead( uint32_t ulPin )
   {
     return LOW ;
   }
+  
+  PortGroup *pPort = digitalPinToPort(ulPin);
 
-  if ( (PORT->Group[g_APinDescription[ulPin].ulPort].IN.reg & (1ul << g_APinDescription[ulPin].ulPin)) != 0 )
+  if ( (pPort->IN.reg & (1ul << g_APinDescription[ulPin].ulPin)) != 0 )
   {
     return HIGH ;
   }

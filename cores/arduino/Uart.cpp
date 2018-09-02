@@ -59,9 +59,9 @@ void Uart::begin(unsigned long baudrate, uint16_t config)
   if (uc_pinRTS != NO_RTS_PIN) {
     pinMode(uc_pinRTS, OUTPUT);
 
-    EPortType rtsPort = g_APinDescription[uc_pinRTS].ulPort;
-    pul_outsetRTS = &PORT->Group[rtsPort].OUTSET.reg;
-    pul_outclrRTS = &PORT->Group[rtsPort].OUTCLR.reg;
+    PortGroup *rtsPort = digitalPinToPort(uc_pinRTS);
+    pul_outsetRTS = &rtsPort->OUTSET.reg;
+    pul_outclrRTS = &rtsPort->OUTCLR.reg;
     ul_pinMaskRTS = (1ul << g_APinDescription[uc_pinRTS].ulPin);
 
     *pul_outclrRTS = ul_pinMaskRTS;

@@ -140,13 +140,11 @@ typedef enum _EPWMChannel
 #endif // __SAMD21J18A__
 } EPWMChannel ;
 
-typedef enum _EPortType
-{
-  NOT_A_PORT=-1,
-  PORTA=0,
-  PORTB=1,
-  PORTC=2,
-} EPortType ;
+// convenient defines for pPort values
+#define NOT_A_PORT 0
+#define PORTA &(PORT_IOBUS->Group[0])
+#define PORTB &(PORT_IOBUS->Group[1])
+#define PORTC &(PORT_IOBUS->Group[2])
 
 typedef enum
 {
@@ -210,7 +208,7 @@ typedef enum _EPioType
 /* Types used for the table below */
 typedef struct _PinDescription
 {
-  EPortType       ulPort ;
+  PortGroup       *pPort ;
   uint32_t        ulPin ;
   EPioType        ulPinType ;
   uint32_t        ulPinAttribute ;
@@ -219,6 +217,12 @@ typedef struct _PinDescription
   ETCChannel      ulTCChannel ;
   EExt_Interrupts ulExtInt ;
 } PinDescription ;
+
+/*
+ * Low level pin to function mapping, common to all SAMD
+ */
+#define digitalPinToPort(P)        ( g_APinDescription[P].pPort )
+
 
 /* Pins table to be instantiated into variant.cpp */
 extern const PinDescription g_APinDescription[] ;
