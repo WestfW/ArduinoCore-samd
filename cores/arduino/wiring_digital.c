@@ -23,13 +23,14 @@
 #endif
 void pinMode( uint32_t ulPin, uint32_t ulMode )
 {
+  PortGroup *pPort = digitalPinToPort(ulPin);
+
   // Handle the case the pin isn't usable as PIO
-  if ( g_APinDescription[ulPin].ulPinType == PIO_NOT_A_PIN )
+  if ( pPort == NOT_A_PORT )
   {
     return ;
   }
 
-  PortGroup *pPort = digitalPinToPort(ulPin);
   uint32_t pin = g_APinDescription[ulPin].ulPin;
   uint32_t pinMask = (1ul << pin);
 
@@ -80,13 +81,14 @@ void pinMode( uint32_t ulPin, uint32_t ulMode )
 
 void digitalWrite( uint32_t ulPin, uint32_t ulVal )
 {
+  PortGroup *pPort = digitalPinToPort(ulPin);
+
   // Handle the case the pin isn't usable as PIO
-  if ( g_APinDescription[ulPin].ulPinType == PIO_NOT_A_PIN )
+  if ( pPort == NOT_A_PORT )
   {
     return ;
   }
 
-  PortGroup *pPort = digitalPinToPort(ulPin);
   uint32_t pin = g_APinDescription[ulPin].ulPin;
   uint32_t pinMask = (1ul << pin);
 
@@ -94,7 +96,7 @@ void digitalWrite( uint32_t ulPin, uint32_t ulVal )
     // the pin is not an output, disable pull-up if val is LOW, otherwise enable pull-up
     pPort->PINCFG[pin].bit.PULLEN = ((ulVal == LOW) ? 0 : 1) ;
   }
-
+  
   switch ( ulVal )
   {
     case LOW:
@@ -112,12 +114,13 @@ void digitalWrite( uint32_t ulPin, uint32_t ulVal )
 int digitalRead( uint32_t ulPin )
 {
   // Handle the case the pin isn't usable as PIO
-  if ( g_APinDescription[ulPin].ulPinType == PIO_NOT_A_PIN )
+  
+  PortGroup *pPort = digitalPinToPort(ulPin);
+
+  if ( pPort == NOT_A_PORT )
   {
     return LOW ;
   }
-  
-  PortGroup *pPort = digitalPinToPort(ulPin);
 
   if ( (pPort->IN.reg & (1ul << g_APinDescription[ulPin].ulPin)) != 0 )
   {
