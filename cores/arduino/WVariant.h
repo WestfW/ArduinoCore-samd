@@ -26,10 +26,6 @@
  * that instead of of the normal AHB bus, which would instert
  * extra wait states.
  */
-#ifdef PORT_IOBUS
-#undef PORT
-#define PORT PORT_IOBUS
-#endif
 
 #ifdef __cplusplus
 extern "C" {
